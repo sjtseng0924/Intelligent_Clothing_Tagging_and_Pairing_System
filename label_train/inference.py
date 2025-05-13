@@ -49,5 +49,5 @@ def predict_image(image_path, topk=10):
 
 # ===== 5. 主程式：可直接執行（請改圖檔名稱） =====
 if __name__ == '__main__':
-    image_path = '1.jpg'  # 改成你要測的圖片檔名
+    image_path = r'C:\Users\jenny\Downloads\label_train\DeepFashion\img\2-in-1_Space_Dye_Athletic_Tank\img_00000001.jpg'  # 改成你要測的圖片檔名
     predict_image(image_path, topk=100)
