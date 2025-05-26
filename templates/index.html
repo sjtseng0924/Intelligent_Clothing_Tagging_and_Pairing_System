@@ -50,20 +50,25 @@
     <!-- 上傳區塊 -->
     <div class="upload-section">
         <h3>新增衣物圖片至衣櫃</h3>
-        <div class="upload-drop" id="drop-zone">
-            拖曳圖片到這裡或點擊選擇
-            <form id="upload-form" method="post" action="/upload" enctype="multipart/form-data">
-                <input type="file" name="file" id="file-input" style="display:none" required>
-                <br><br>
-                <select name="category">
+        <form id="upload-form" method="post" action="/upload" enctype="multipart/form-data">
+            <div class="upload-drop" id="drop-zone">
+                拖曳圖片到這裡或點擊選擇圖片
+                <input type="file" name="file" id="file-input" style="display: none;" required>
+            </div>
+
+            <div id="upload-filename" style="margin-top:10px; color:#555;"></div>
+
+            <div style="margin-top: 16px;">
+                <select name="category" style="padding: 8px 12px; font-size: 16px; border-radius: 6px;">
                     <option value="user_top">上衣</option>
                     <option value="user_bottom">褲子</option>
                 </select>
-                <button type="submit">上傳</button>
-            </form>
-        </div>
-        <div class="upload-status" id="upload-status">上傳中請稍候...</div>
+                <button type="submit" style="padding: 8px 20px; font-size: 16px; background-color: #0078d7; color: white; border: none; border-radius: 6px; cursor: pointer; margin-left: 10px;">上傳</button>
+            </div>
+        </form>
+        <div class="upload-status" id="upload-status" style="margin-top: 10px; color: #0078d7; display: none;">上傳中請稍候...</div>
     </div>
+
     <div class="divider"></div>
     <!-- 網路衣櫃區塊 -->
     <div class="section net-section">
@@ -117,37 +122,68 @@
         document.getElementById('overlay').style.display = 'none';
         document.getElementById('recommendation-modal').style.display = 'none';
     }
-    // 拖曳邏輯
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
     const form = document.getElementById('upload-form');
     const statusText = document.getElementById('upload-status');
+    const filenameText = document.getElementById('upload-filename');
+
+    // 點擊上傳區觸發檔案選擇
     dropZone.addEventListener('click', () => fileInput.click());
-    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
-    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+
+    // 拖曳效果處理
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+
     dropZone.addEventListener('drop', (e) => {
         e.preventDefault();
         dropZone.classList.remove('dragover');
         const files = e.dataTransfer.files;
-        if (files.length > 0) fileInput.files = files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            filenameText.textContent = `已選擇檔案：${files[0].name}`;
+        }
     });
+
+    // 使用者選擇檔案後顯示名稱
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+            filenameText.textContent = `已選擇檔案：${fileInput.files[0].name}`;
+        } else {
+            filenameText.textContent = '';
+        }
+    });
+
+    // 表單送出事件處理
     form.addEventListener('submit', (e) => {
         e.preventDefault();
         const formData = new FormData(form);
         statusText.style.display = 'block';
-        fetch('/upload', { method: 'POST', body: formData })
-            .then(res => {
-                if (res.redirected) {
-                    statusText.textContent = '上傳成功！';
-                    setTimeout(() => location.reload(), 1000);
-                } else {
-                    statusText.textContent = '上傳失敗';
-                }
-            })
-            .catch(() => {
-                statusText.textContent = '發生錯誤，請稍後再試';
-            });
+        statusText.textContent = '上傳中請稍候...';
+
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => {
+            if (res.redirected) {
+                statusText.textContent = '✅ 上傳成功，重新整理中...';
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                statusText.textContent = '❌ 上傳失敗';
+            }
+        })
+        .catch(() => {
+            statusText.textContent = '❌ 發生錯誤，請稍後再試';
+        });
     });
+
 </script>
 </body>
 </html>
