@@ -1,0 +1,5 @@
+label_train/DeepFashion/
+label_train/__pycache__/
+model2_2/__pycache__
+model_test/__pycache__
+color_label/color_dataset/
