@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>虛擬衣櫃推薦系統</title>
+    <style>
+        body { font-family: "Segoe UI", sans-serif; margin: 0; padding: 0; background-color: #f9f9f9; }
+        header { background-color: #1e1e2f; color: white; padding: 24px 40px; text-align: center; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); }
+        h1 { margin: 0; font-size: 28px; letter-spacing: 1px; }
+        .container { padding: 30px; max-width: 1280px; margin: auto; }
+        .section { margin-bottom: 40px; }
+        h2 { margin-bottom: 10px; color: #222; font-size: 22px; border-left: 4px solid #0078d7; padding-left: 10px; }
+        .closet-scroll { display: flex; overflow-x: auto; padding: 12px; border-radius: 10px; background-color: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.05); gap: 14px; }
+        .closet-scroll img { width: 140px; height: auto; cursor: pointer; border-radius: 10px; transition: transform 0.2s, border 0.2s; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+        .closet-scroll img:hover { transform: scale(1.04); }
+        .closet-scroll img.selected { border: 3px solid #0078d7; }
+        .center-button { text-align: center; margin-top: 30px; }
+        button { padding: 12px 26px; font-size: 16px; background-color: #0078d7; color: white; border: none; border-radius: 6px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        button:hover { background-color: #005fa3; }
+        #recommendation-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 10px; z-index: 1000; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); z-index: 999; }
+        .upload-section { background: #ffffff; padding: 25px 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); max-width: 600px; margin: 40px auto; text-align: center; position: relative; }
+        .upload-section h3 { font-size: 20px; color: #333; margin-bottom: 15px; }
+        .upload-drop { border: 2px dashed #0078d7; padding: 30px; border-radius: 10px; background-color: #f4faff; color: #333; cursor: pointer; transition: background-color 0.3s; }
+        .upload-drop.dragover { background-color: #e1f0ff; }
+        .upload-status { position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); font-size: 14px; color: #0078d7; display: none; }
+        .divider { height: 1px; background: #ddd; margin: 50px 0 30px; }
+        .net-section { opacity: 0.85; }
+    </style>
+</head>
+<body>
+<header><h1>虛擬衣櫃推薦系統</h1></header>
+<div class="container">
+    <!-- 使用者衣櫃區塊 -->
+    <div class="section">
+        <h2>使用者上衣衣櫃</h2>
+        <div class="closet-scroll" id="top-closet">
+            {% for img in user_tops %}<img src="{{ url_for('static', filename='user_top/' + img) }}" data-name="{{ img }}" data-type="user_top" onclick="selectItem(this)">{% endfor %}
+        </div>
+    </div>
+    <div class="section">
+        <h2>使用者褲子衣櫃</h2>
+        <div class="closet-scroll" id="bottom-closet">
+            {% for img in user_bottoms %}<img src="{{ url_for('static', filename='user_bottom/' + img) }}" data-name="{{ img }}" data-type="user_bottom" onclick="selectItem(this)">{% endfor %}
+        </div>
+    </div>
+    <div class="center-button">
+        <button onclick="triggerRecommendation()">推薦搭配</button>
+    </div>
+    <!-- 上傳區塊 -->
+    <div class="upload-section">
+        <h3>新增衣物圖片至衣櫃</h3>
+        <form id="upload-form" method="post" action="/upload" enctype="multipart/form-data">
+            <div class="upload-drop" id="drop-zone">
+                拖曳圖片到這裡或點擊選擇圖片
+                <input type="file" name="file" id="file-input" style="display: none;" required>
+            </div>
+
+            <div id="upload-filename" style="margin-top:10px; color:#555;"></div>
+
+            <div style="margin-top: 16px;">
+                <select name="category" style="padding: 8px 12px; font-size: 16px; border-radius: 6px;">
+                    <option value="user_top">上衣</option>
+                    <option value="user_bottom">褲子</option>
+                </select>
+                <button type="submit" style="padding: 8px 20px; font-size: 16px; background-color: #0078d7; color: white; border: none; border-radius: 6px; cursor: pointer; margin-left: 10px;">上傳</button>
+            </div>
+        </form>
+        <div class="upload-status" id="upload-status" style="margin-top: 10px; color: #0078d7; display: none;">上傳中請稍候...</div>
+    </div>
+
+    <div class="divider"></div>
+    <!-- 網路衣櫃區塊 -->
+    <div class="section net-section">
+        <h2>網路上衣庫</h2>
+        <div class="closet-scroll">{% for img in net_tops %}<img src="{{ url_for('static', filename='net_top/' + img) }}">{% endfor %}</div>
+    </div>
+    <div class="section net-section">
+        <h2>網路褲子庫</h2>
+        <div class="closet-scroll">{% for img in net_bottoms %}<img src="{{ url_for('static', filename='net_bottom/' + img) }}">{% endfor %}</div>
+    </div>
+</div>
+<div id="overlay" onclick="closeModal()"></div>
+<div id="recommendation-modal">
+    <h2>AI 搭配結果</h2>
+    <div id="result-user"></div>
+    <div id="result-net"></div>
+    <br>
+    <button onclick="closeModal()">關閉</button>
+</div>
+<script>
+    let selectedImage = null;
+    let selectedType = null;
+    function selectItem(img) {
+        document.querySelectorAll('.closet-scroll img').forEach(i => i.classList.remove('selected'));
+        img.classList.add('selected');
+        selectedImage = img.getAttribute('data-name');
+        selectedType = img.getAttribute('data-type');
+    }
+    function triggerRecommendation() {
+        if (!selectedImage || !selectedType) {
+            alert('請先點選一件上衣或褲子！');
+            return;
+        }
+        fetch("/recommend", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: "image=" + encodeURIComponent(selectedImage) + "&type=" + encodeURIComponent(selectedType)
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('result-user').innerHTML = `你的推薦：<br><img src="/static/${data.user_path}" width="150">`;
+            document.getElementById('result-net').innerHTML = `網路推薦：<br><img src="/static/${data.net_path}" width="150">`;
+            showModal();
+        });
+    }
+    function showModal() {
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('recommendation-modal').style.display = 'block';
+    }
+    function closeModal() {
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('recommendation-modal').style.display = 'none';
+    }
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const form = document.getElementById('upload-form');
+    const statusText = document.getElementById('upload-status');
+    const filenameText = document.getElementById('upload-filename');
+
+    // 點擊上傳區觸發檔案選擇
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    // 拖曳效果處理
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            filenameText.textContent = `已選擇檔案：${files[0].name}`;
+        }
+    });
+
+    // 使用者選擇檔案後顯示名稱
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+            filenameText.textContent = `已選擇檔案：${fileInput.files[0].name}`;
+        } else {
+            filenameText.textContent = '';
+        }
+    });
+
+    // 表單送出事件處理
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        statusText.style.display = 'block';
+        statusText.textContent = '上傳中請稍候...';
+
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => {
+            if (res.redirected) {
+                statusText.textContent = '✅ 上傳成功，重新整理中...';
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                statusText.textContent = '❌ 上傳失敗';
+            }
+        })
+        .catch(() => {
+            statusText.textContent = '❌ 發生錯誤，請稍後再試';
+        });
+    });
+
+</script>
+</body>
+</html>
