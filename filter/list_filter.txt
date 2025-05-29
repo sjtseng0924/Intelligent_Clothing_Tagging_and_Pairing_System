@@ -1,0 +1,309 @@
+# 不合理搭配示範 list.txt
+# 格式: attribute_top, attribute_bottom
+denim, lace
+denim, silk
+denim, chiffon
+denim, velvet
+velvet, mesh
+corduroy, chiffon
+denim, satin
+animal print, polka dot
+animal print, geometric
+floral, plaid
+floral, striped
+paisley, plaid
+paisley, geometric
+minimalist, baroque print
+boxy, silk
+slim, velvet
+asymmetric, denim
+crochet, denim shift
+crochet, lace mini
+crochet, paisley
+crochet, tweed
+crochet, tie-dye
+crochet, velvet
+crochet, chiffon
+crochet, leather moto
+crochet, embroidered shift
+crochet, satin
+crochet, silk
+crochet, tulle
+crochet, fur
+beaded, distressed skinny
+beaded, denim skater
+beaded, crochet crop
+beaded, lace mini
+beaded, sequin
+beaded, velvet
+beaded, tweed
+beaded, tie-dye
+beaded, patchwork
+beaded, chiffon
+beaded, leather pencil
+beaded, embroidered gauze
+beaded, satin
+beaded, silk
+beaded, tulle
+beaded, fur
+floral, denim shift
+floral, chiffon maxi
+floral, leather pencil
+floral, embroidered peasant
+floral, satin
+floral, silk
+floral, tulle
+floral, fur
+lace, denim shift
+lace, sequin
+lace, crochet
+lace, acid wash
+lace, beaded
+lace, tweed
+lace, tie-dye
+lace, patchwork
+lace, velvet
+lace, chiffon layered
+lace, leather pencil
+lace, embroidered gauze
+lace, satin
+lace, silk
+lace, tulle
+lace, fur
+paisley, striped
+paisley, plaid
+paisley, acid wash
+paisley, animal print
+paisley, patchwork
+paisley, tie-dye
+paisley, tweed
+paisley, velvet
+paisley, chiffon
+paisley, leather moto
+paisley, embroidered
+paisley, satin
+paisley, silk
+paisley, tulle
+paisley, fur
+patchwork, floral
+patchwork, plaid
+patchwork, paisley
+patchwork, animal print
+patchwork, acid wash
+patchwork, sequin
+patchwork, tie-dye
+patchwork, tweed
+patchwork, velvet
+patchwork, chiffon
+patchwork, leather moto
+patchwork, embroidered
+patchwork, satin
+patchwork, silk
+patchwork, tulle
+patchwork, fur
+plaid, floral
+plaid, animal print
+plaid, paisley
+plaid, striped
+plaid, acid wash
+plaid, polka dot
+plaid, sequin
+plaid, tie-dye
+plaid, tweed
+plaid, velvet
+plaid, chiffon
+plaid, leather moto
+plaid, embroidered
+plaid, satin
+plaid, silk
+plaid, tulle
+plaid, fur
+polka dot, animal print
+polka dot, floral
+polka dot, striped
+polka dot, paisley
+polka dot, patchwork
+polka dot, tweed
+polka dot, velvet
+polka dot, chiffon
+polka dot, leather moto
+polka dot, embroidered
+polka dot, satin
+polka dot, silk
+polka dot, tulle
+polka dot, fur
+ruffled, acid wash
+ruffled, denim shift
+ruffled, distressed skinny
+ruffled, crochet crop
+ruffled, patchwork
+ruffled, tie-dye
+ruffled, tweed
+ruffled, velvet
+ruffled, chiffon layered
+ruffled, leather pencil
+ruffled, embroidered gauze
+ruffled, satin
+ruffled, silk
+ruffled, tulle
+ruffled, fur
+sequin, denim shift
+sequin, acid wash
+sequin, distressed
+sequin, crochet
+sequin, lace mini
+sequin, patchwork
+sequin, tweed
+sequin, velvet
+sequin, chiffon layered
+sequin, leather pencil
+sequin, embroidered gauze
+sequin, satin
+sequin, silk
+sequin, tulle
+sequin, fur
+striped, animal print
+striped, floral
+striped, paisley
+striped, plaid
+striped, polka dot
+striped, patchwork
+striped, tie-dye
+striped, tweed
+striped, velvet
+striped, chiffon layered
+striped, leather pencil
+striped, embroidered gauze
+striped, satin
+striped, silk
+striped, tulle
+striped, fur
+tie-dye, lace
+tie-dye, beaded
+tie-dye, crochet
+tie-dye, paisley
+tie-dye, plaid
+tie-dye, patchwork
+tie-dye, tweed
+tie-dye, velvet
+tie-dye, chiffon layered
+tie-dye, leather pencil
+tie-dye, embroidered gauze
+tie-dye, satin
+tie-dye, silk
+tie-dye, tulle
+tie-dye, fur
+tweed, lace
+tweed, beaded
+tweed, denim shift
+tweed, crochet crop
+tweed, patchwork
+tweed, tie-dye
+tweed, velvet
+tweed, chiffon layered
+tweed, leather pencil
+tweed, embroidered gauze
+tweed, satin
+tweed, silk
+tweed, tulle
+tweed, fur
+velvet, denim shift
+velvet, acid wash
+velvet, distressed skinny
+velvet, crochet crop
+velvet, patchwork
+velvet, tie-dye
+velvet, tweed
+velvet, chiffon layered
+velvet, leather pencil
+velvet, embroidered gauze
+velvet, satin
+velvet, silk
+velvet, tulle
+velvet, fur
+chiffon, denim shift
+chiffon, distressed skinny
+chiffon, acid wash
+chiffon, animal print
+chiffon, paisley
+chiffon, patchwork
+chiffon, sequin
+chiffon, tweed
+chiffon, velvet
+chiffon, leather pencil
+chiffon, embroidered gauze
+chiffon, satin
+chiffon, silk
+chiffon, tulle
+chiffon, fur
+leather, denim shift
+leather, distressed skinny
+leather, acid wash
+leather, animal print
+leather, paisley
+leather, patchwork
+leather, sequin
+leather, tweed
+leather, velvet
+leather, chiffon layered
+leather, embroidered gauze
+leather, satin
+leather, silk
+leather, tulle
+leather, fur
+satin, denim shift
+satin, acid wash
+satin, distressed skinny
+satin, paisley
+satin, patchwork
+satin, tweed
+satin, velvet
+satin, chiffon layered
+satin, leather pencil
+satin, embroidered gauze
+satin, nylon
+satin, fur
+silk, denim shift
+silk, acid wash
+silk, distressed skinny
+silk, paisley
+silk, patchwork
+silk, tweed
+silk, velvet
+silk, chiffon layered
+silk, leather pencil
+silk, embroidered gauze
+silk, nylon
+silk, fur
+nylon, denim shift
+nylon, distressed skinny
+nylon, acid wash
+nylon, animal print
+nylon, paisley
+nylon, patchwork
+nylon, sequin
+nylon, tweed
+nylon, velvet
+nylon, chiffon layered
+nylon, leather pencil
+nylon, embroidered gauze
+nylon, satin
+nylon, silk
+nylon, tulle
+nylon, fur
+fur, denim shift
+fur, distressed skinny
+fur, acid wash
+fur, animal print
+fur, paisley
+fur, patchwork
+fur, sequin
+fur, tweed
+fur, velvet
+fur, chiffon layered
+fur, leather pencil
+fur, embroidered gauze
+fur, satin
+fur, silk
+fur, tulle
+fur, nylon
