@@ -107,9 +107,13 @@ def train_model(csv_path, num_epochs=20, batch_size=32, lr=1e-3, val_split=0.2):
 
     model = Top2BottomModel(input_dim, output_dim).to(device)
 
-    # pos_weight = 42.5 → 轉為 alpha
-    pos_weight = torch.tensor([42.5], dtype=torch.float32).to(device)
-    alpha = pos_weight / (pos_weight + 1.0)
+    # 動態計算 pos_weight，根據實際比例
+    N_total = 554
+    N_pos = 15
+    N_neg = N_total - N_pos
+
+    pos_weight = torch.tensor([N_neg / N_pos], dtype=torch.float32).to(device)  # 約 35.93
+    alpha = pos_weight / (pos_weight + 1.0)  # 約 0.9729
 
     criterion = FocalLoss(alpha=alpha, gamma=2.0)
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=1e-5)
@@ -192,7 +196,7 @@ def train_model(csv_path, num_epochs=20, batch_size=32, lr=1e-3, val_split=0.2):
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    csv_path = r"C:\Users\zhiyi\Desktop\AI_final\Intelligent_Clothing_Tagging_and_Pairing_System\labels.csv"
+    csv_path = r"C:\Users\zhiyi\Desktop\AI_final\Intelligent_Clothing_Tagging_and_Pairing_System\model2_2\filtered_probs.csv"
     model = train_model(csv_path)
 
     torch.save(model.state_dict(), "top2bottom.pth")
