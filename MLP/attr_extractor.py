@@ -5,7 +5,7 @@ from label_train.model import AttributeResNet
 import os
 
 class AttributeExtractor:
-    def __init__(self, model_path, device, attr_file='list_attr_cloth.txt', threshold=0.2):
+    def __init__(self, model_path, device, attr_file='list_attr_cloth.txt', threshold=0.02):
         self.device = device
         self.model = AttributeResNet(num_labels=1000).to(device)
         self.model.load_state_dict(torch.load(model_path, map_location=device))
@@ -39,8 +39,7 @@ class AttributeExtractor:
         with torch.no_grad():
             logits = self.model(image_tensor)
             probs = torch.sigmoid(logits).squeeze()
-        # 取出所有 >= threshold 的屬性
-        # selected = [(self.attr_names[i], float(probs[i])) for i in range(len(probs)) if probs[i] >= self.threshold]
-        # return selected
         filtered_probs = probs[self.attr_indices]
+        # 將小於 threshold 的分數設為 0
+        filtered_probs = torch.where(filtered_probs >= self.threshold, filtered_probs, torch.zeros_like(filtered_probs))
         return filtered_probs.cpu().tolist()

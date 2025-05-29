@@ -1,7 +1,7 @@
 import os
 import torch
 from torch.utils.data import Dataset
-from model_test.color_util import ColorExtractor
+from color_util import ColorExtractor
 
 class OutfitPairDataset(Dataset):
     def __init__(self, cleaned_dir, random_dir, attr_extractor, color_extractor):
