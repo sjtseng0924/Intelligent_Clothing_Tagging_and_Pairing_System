@@ -26,7 +26,7 @@ def train_compatibility():
     model = AttributeMLPCompatibility(num_labels=num_labels).to(device)
 
     # 資料集劃分
-    full_dataset = OutfitPairDataset('../dataset/Cleaned-Maryland-Dataset', '../dataset/Unmatch-Dataset2', attr_extractor, color_extractor)
+    full_dataset = OutfitPairDataset('../dataset/Cleaned-Maryland-Dataset', '../dataset/Mismatched-Dataset2', attr_extractor, color_extractor)
     total_len = len(full_dataset)
     train_len = int(0.8 * total_len)
     valid_len = int(0.1 * total_len)
@@ -42,7 +42,7 @@ def train_compatibility():
     pos_weight = torch.tensor([neg / pos]).to(device)
     print(f"Using pos_weight for BCEWithLogitsLoss: {pos_weight.item():.4f}")
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+    optimizer = torch.optim.Adam(model.parameters(), lr=5e-4)
     criterion = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight)
 
     train_loader = DataLoader(train_set, batch_size=64, shuffle=True, num_workers=0)
@@ -80,8 +80,8 @@ def train_compatibility():
         print(f"Epoch {epoch+1} average valid loss: {valid_loss / len(valid_loader)}")
         model.train()
 
-    torch.save(model.state_dict(), 'compatibility_mlp3.pth')
-    print("Model saved to compatibility_mlp3.pth")
+    torch.save(model.state_dict(), 'compatibility_mlp_main_v2.pth')
+    print("Model saved to compatibility_mlpv4_main_v2.pth")
 
     # Test
     model.eval()

@@ -7,15 +7,15 @@ import argparse
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 
-from model_test.attr_extractor import AttributeExtractor
-from MLP.model import AttributeMLPCompatibility
-from model_test.color_util import ColorExtractor
+from attr_extractor import AttributeExtractor
+from model import AttributeMLPCompatibility
+from color_util import ColorExtractor
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # === 路徑設定 ===
 attr_ckpt = os.path.join(project_root, "label_train", "saved_models", "best_tagger.pth")
-compat_ckpt = os.path.join(project_root, "MLP", "compatibility_mlp.pth")
+compat_ckpt = os.path.join(project_root, "main_approach", "compatibility_mlp_main.pth")
 color_ckpt = os.path.join(project_root, "color_label", "color_classifier.pt")
 
 # === 載入模型 ===
@@ -50,8 +50,18 @@ def recommend_bottom(top_img_path, bottom_dir, top_k=5):
             score = compat_model(top_bin, bottom_bin).item()
         scores.append(score)
         candidates.append(fname)
+    # Get top-k results based on scores
     top_indices = np.argsort(scores)[::-1][:top_k]
-    return [(candidates[i], scores[i]) for i in top_indices]
+    top_k_results = [(candidates[i], scores[i]) for i in top_indices]
+    
+    # Get all results with positive scores
+    positive_indices = [i for i, score in enumerate(scores) if score > 0]
+    positive_results = [(candidates[i], scores[i]) for i in positive_indices]
+    
+    # Sort positive results by score (highest first)
+    positive_results.sort(key=lambda x: x[1], reverse=True)
+    
+    return top_k_results, positive_results
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -59,6 +69,8 @@ if __name__ == "__main__":
     parser.add_argument('--bottom_dir', type=str, required=True, help='Directory of bottom images')
     parser.add_argument('--top_k', type=int, default=5, help='Number of recommendations')
     args = parser.parse_args()
-    results = recommend_bottom(args.top, args.bottom_dir, args.top_k)
-    for fname, score in results:
-        print(f"{fname}: {score:.4f}")
+    top_k_results, positive_results = recommend_bottom(args.top, args.bottom_dir, args.top_k)
+    for fname, score in top_k_results:
+        print(f"Top-{args.top_k} Recommendation - {fname}: {score:.4f}")
+    for fname, score in positive_results:
+        print(f"Positive Result - {fname}: {score:.4f}")

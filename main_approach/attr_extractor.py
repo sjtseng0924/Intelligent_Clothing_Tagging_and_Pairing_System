@@ -40,6 +40,9 @@ class AttributeExtractor:
             logits = self.model(image_tensor)
             probs = torch.sigmoid(logits).squeeze()
         filtered_probs = probs[self.attr_indices]
-        # 將小於 threshold 的分數設為 0
+        # if < threshold, set to 0
+        # else keep the value (Ex. 0.2, 0.5, 0.8...)
         filtered_probs = torch.where(filtered_probs >= self.threshold, filtered_probs, torch.zeros_like(filtered_probs))
         return filtered_probs.cpu().tolist()
+    
+    # The color extractor is not used in this class, but you can add it if needed.

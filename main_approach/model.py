@@ -7,8 +7,10 @@ class AttributeMLPCompatibility(nn.Module):
         self.mlp = nn.Sequential(
             nn.Linear(num_labels * 2, hidden_dim),
             nn.ReLU(),
+            nn.Dropout(p=0.1),
             nn.Linear(hidden_dim, hidden_dim),
             nn.ReLU(),
+            nn.Dropout(p=0.1),
             nn.Linear(hidden_dim, 1)
         )
 
