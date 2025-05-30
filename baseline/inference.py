@@ -15,7 +15,7 @@ from label_train.model import AttributeResNet
 from pair_train.train import Top2BottomModel  # 假設你把搭配模型放這裡
 
 # === 設定參數 ===
-image_path = os.path.join(project_root, "baseline","Top", "5822631.jpg")
+image_path = os.path.join(project_root, "baseline","Top", "8933008.jpg")
 attribute_model_path = os.path.join(project_root, "label_train", "saved_models", "best_tagger.pth")
 pairing_model_path = os.path.join(project_root, "baseline", "top2bottom.pth")
 num_labels = 1000
@@ -105,21 +105,36 @@ def compare_with_user_bottoms(predicted_label, bottom_dir, top_k=10, show_top_n=
 
 
 # === 主程式執行 ===
-print('get_top_label...')
-top_label = get_top_label(image_path)
-
-predicted_bottom_label = predict_bottom_label(top_label)
-
-
+# === 新增：Top 資料夾路徑 ===
+top_dir = os.path.join(project_root, "baseline", "Top")
 user_bottom_dir = os.path.join(project_root, "baseline", "Bottom")
-top_filename = os.path.basename(image_path)
 
-best_match, best_distance = compare_with_user_bottoms(
-    predicted_bottom_label,
-    user_bottom_dir,
-    top_k=10,
-    show_top_n=20,
-    top_filename=top_filename
-)
+# === 批次處理 Top 資料夾中所有圖片 ===
+for top_filename in sorted(os.listdir(top_dir)):
+    if not top_filename.lower().endswith(('.jpg', '.jpeg', '.png')):
+        continue
 
-print(f"\n🏆 最推薦的使用者褲子是: {best_match}（距離: {best_distance:.4f}）")
+    image_path = os.path.join(top_dir, top_filename)
+    print(f"\n處理上衣：{top_filename}")
+
+    try:
+        # 1. 擷取上衣的特徵
+        top_label = get_top_label(image_path)
+
+        # 2. 預測該上衣應該搭配的下身特徵
+        predicted_bottom_label = predict_bottom_label(top_label)
+
+        # 3. 與使用者的所有 Bottom 做距離比較，找出最推薦的
+        best_match_info = compare_with_user_bottoms(
+            predicted_bottom_label,
+            user_bottom_dir,
+            top_k=10,
+            show_top_n=5,
+            top_filename=top_filename
+        )
+
+        best_match, best_distance = best_match_info
+        print(f"推薦下身：{best_match}（距離: {best_distance:.4f}）")
+
+    except Exception as e:
+        print(f"發生錯誤：{e}")
