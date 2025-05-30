@@ -19,28 +19,22 @@ class OutfitDataset(Dataset):
 
         with open(csv_path, 'r', encoding='utf-8') as f:
             reader = csv.DictReader(f)
-
             for row in reader:
                 top = ast.literal_eval(row['filtered_top_probs'])
                 bottom = ast.literal_eval(row['filtered_bottom_probs'])
                 if sum(bottom) == 0:  # 過濾掉無標記資料
                     continue
-                
+
                 top_tensor = torch.tensor(top, dtype=torch.float32)
                 bottom_tensor = torch.tensor(bottom, dtype=torch.float32)
 
                 self.top_labels.append(top_tensor)
                 self.bottom_labels.append(bottom_tensor)
-                
+
                 count_ones_top = (top_tensor == 1).sum().item()
                 count_ones_bottom = (bottom_tensor == 1).sum().item()
-                # print('count_ones: ', count_ones)
                 self.label_count_top.append(count_ones_top)
                 self.label_counts_bottom.append(count_ones_bottom)
-            # print('self.label_counts_bottom:', len(self.label_counts_bottom))
-            # print('mean ones top:', np.mean(self.label_count_top), 'len of top tensor:', len(self.top_labels[0]))
-            # print('mean ones bottom:', np.mean(self.label_counts_bottom), 'len of bottom tensor:', len(self.bottom_labels[0]))
-            
 
     def __len__(self):
         return len(self.top_labels)
@@ -61,22 +55,19 @@ class Top2BottomModel(nn.Module):
         super().__init__()
         self.fc = nn.Sequential(
             nn.Linear(input_dim, 512),
-            # nn.BatchNorm1d(512),  # 加快收斂、穩定訓練
             nn.ReLU(),
             nn.LayerNorm(512),
             nn.Dropout(p=0.2),
             nn.Linear(512, 256),
-            # nn.BatchNorm1d(256),
             nn.ReLU(),
             nn.LayerNorm(256),
             nn.Dropout(p=0.2),
             nn.Linear(256, output_dim),
-            # nn.Sigmoid()
         )
 
     def forward(self, x):
         return self.fc(x)
-    
+
 # FocalLoss 定義
 class FocalLoss(nn.Module):
     def __init__(self, alpha=1.0, gamma=2.0, reduction='mean'):
@@ -90,7 +81,7 @@ class FocalLoss(nn.Module):
 
     def forward(self, inputs, targets):
         inputs = torch.sigmoid(inputs)
-        BCE_loss = nn.functional.binary_cross_entropy(inputs, targets, reduction='none')
+        BCE_loss = F.binary_cross_entropy(inputs, targets, reduction='none')
         pt = torch.where(targets == 1, inputs, 1 - inputs)
         alpha = self.alpha.to(inputs.device)
         if alpha.ndim > 0:
@@ -107,8 +98,7 @@ class FocalLoss(nn.Module):
             return loss
 
 # === 3. 訓練模型（含驗證）===
-# 主要訓練函數
-def train_model(csv_path, num_epochs=20, batch_size=32, lr=1e-3, val_split=0.2):
+def train_model(csv_path, num_epochs=20, batch_size=64, lr=1e-3, val_split=0.2):
     dataset = OutfitDataset(csv_path)
 
     val_size = int(len(dataset) * val_split)
@@ -123,18 +113,12 @@ def train_model(csv_path, num_epochs=20, batch_size=32, lr=1e-3, val_split=0.2):
 
     model = Top2BottomModel(input_dim, output_dim).to(device)
 
-    # Get class frequencies
-    freqs = dataset.get_label_frequencies()  # shape: (404,)
-    pos_weight = (1.0 - freqs) / freqs  # pos_weight: (404,)
-
-    # To avoid division by zero for extremely rare labels
+    freqs = dataset.get_label_frequencies()
+    pos_weight = (1.0 - freqs) / freqs
     pos_weight = torch.clamp(pos_weight, min=1.0, max=1000.0).to(device)
-
-    # Convert pos_weight to alpha
     alpha = pos_weight / (pos_weight + 1.0)
 
     criterion = FocalLoss(alpha=alpha, gamma=0.5)
-    # criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=1e-5)
 
     train_losses = []
@@ -183,9 +167,6 @@ def train_model(csv_path, num_epochs=20, batch_size=32, lr=1e-3, val_split=0.2):
         all_preds = torch.cat(all_preds).numpy()
         all_labels = torch.cat(all_labels).numpy()
 
-        # === 動態最佳 threshold 搜尋 ===
-        from sklearn.metrics import f1_score
-
         thresholds = np.linspace(0.2, 0.9, 15)
         best_f1 = 0
         best_thresh = 0.5
@@ -206,11 +187,10 @@ def train_model(csv_path, num_epochs=20, batch_size=32, lr=1e-3, val_split=0.2):
         print("F1 Score: ", f1_score(all_labels, binarized_preds, average='micro'))
         print(f"Train Loss: {train_losses[-1]:.4f} | Validation Loss: {val_losses[-1]:.4f}")
 
-        # Validation loss 已經算好了
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             wait = 0
-            torch.save(model.state_dict(), "best_model.pt")  # 儲存最好的模型
+            torch.save(model.state_dict(), "best_model.pt")
         else:
             wait += 1
             if wait >= patience:
@@ -231,8 +211,6 @@ def train_model(csv_path, num_epochs=20, batch_size=32, lr=1e-3, val_split=0.2):
 # === 主程式 ===
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
     csv_path = "filtered_probs.csv"
     model = train_model(csv_path)
-
     torch.save(model.state_dict(), "top2bottom.pth")
