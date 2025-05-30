@@ -35,10 +35,10 @@ def predict_image_colors(img_path, threshold=0.3):
     for i, prob in enumerate(probs):
         result[class_names[i]] = round(float(prob), 3)  # 四捨五入方便看
 
-    print(f"\n🎨 預測結果（圖片：{img_path}）")
+    print(f"\n預測結果（圖片：{img_path}）")
     for color, score in result.items():
         if score > threshold:
-            print(f"✅ {color}: {score}")
+            print(f"{color}: {score}")
         else:
             print(f"   {color}: {score}")
     return result

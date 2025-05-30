@@ -15,7 +15,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # === 路徑設定 ===
 attr_ckpt = os.path.join(project_root, "label_train", "saved_models", "best_tagger.pth")
-compat_ckpt = os.path.join(project_root, "MLP", "compatibility_mlp.pth")
+compat_ckpt = os.path.join(project_root, "MLP", "compatibility_mlp_v3.pth")
 color_ckpt = os.path.join(project_root, "color_label", "color_classifier.pt")
 
 # === 載入模型 ===
@@ -23,8 +23,9 @@ attr_extractor = AttributeExtractor(attr_ckpt, device)
 color_extractor = ColorExtractor(color_ckpt, device, num_colors=12)
 num_labels = len(attr_extractor.attr_names) + 12
 compat_model = AttributeMLPCompatibility(num_labels=num_labels).to(device)
-compat_model.load_state_dict(torch.load(compat_ckpt, map_location=device))
+compat_model.load_state_dict(torch.load(compat_ckpt, map_location=device, weights_only=False))
 compat_model.eval()
+
 
 def get_label_bin(image_path, threshold=0.02):
     probs = attr_extractor.extract(image_path)

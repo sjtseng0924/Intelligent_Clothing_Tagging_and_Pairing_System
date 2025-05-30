@@ -79,7 +79,7 @@ def main():
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             os.makedirs('saved_models', exist_ok=True)
-            torch.save(model.state_dict(), 'saved_models/best_tagger.pth')
+            torch.save(model.state_dict(), 'best_tagger.pth')
             print("✅ Saved best model!")
 
 if __name__ == '__main__':
