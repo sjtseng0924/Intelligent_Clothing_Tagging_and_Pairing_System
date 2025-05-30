@@ -11,7 +11,7 @@ model.eval()
 
 # ===== 2. 載入屬性名稱（正確處理空格 + 類別欄） =====
 attr_names = []
-with open('DeepFashion/Anno_coarse/list_attr_cloth.txt', 'r', encoding='utf-8') as f:
+with open('../list_attr_cloth.txt', 'r', encoding='utf-8') as f:
     lines = f.readlines()[2:]  # 跳過第一行數量與第二行欄名
     for line in lines:
         parts = line.strip().split()
@@ -49,5 +49,5 @@ def predict_image(image_path, topk=10):
 
 # ===== 5. 主程式：可直接執行（請改圖檔名稱） =====
 if __name__ == '__main__':
-    image_path = r'C:\Users\jenny\Desktop\label_train\static\net_top\3.png'  # 改成你要測的圖片檔名
+    image_path = r'../test/top.jpg'  # 改成你要測的圖片檔名
     predict_image(image_path, topk=100)
