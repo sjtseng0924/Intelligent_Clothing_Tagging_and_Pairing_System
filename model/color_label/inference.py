@@ -5,16 +5,16 @@ from model import ColorClassifier
 from dataset_attr import ColorDataset  # 用來抓 class_names
 import os
 
-# === 參數設定 ===
-data_path = "color_dataset"
-class_names = sorted(os.listdir(data_path))
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # === 載入模型 ===
-model = ColorClassifier(num_classes=len(class_names))
-model.load_state_dict(torch.load("color_classifier.pt", map_location=device))
-model.to(device)
-model.eval()
+color_class_names = [
+    "black", "blue", "brown", "green", "grey", "orange",
+    "pink", "purple", "red", "silver", "white", "yellow"
+]
+color_model = ColorClassifier(num_classes=len(color_class_names)).to(device)
+color_model.load_state_dict(torch.load("color_classifier.pt", map_location=device))
+color_model.eval()
 
 # === 預處理 ===
 transform = transforms.Compose([
