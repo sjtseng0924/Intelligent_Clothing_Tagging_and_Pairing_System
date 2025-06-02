@@ -13,8 +13,6 @@ This project aims to build an intelligent system for clothing attribute tagging 
 - **Recommend compatible outfit pairs** (e.g., top and bottom) based on learned compatibility
 - **Provide a web interface** for users to upload images and receive recommendations
 
-The system is modular, supporting both research/analysis scripts and a user-facing web application.
-
 ---
 
 ## 📁 Project Structure
@@ -23,7 +21,7 @@ The system is modular, supporting both research/analysis scripts and a user-faci
 Intelligent_Clothing_Tagging_and_Pairing_System/
 │
 ├── app.py                      # Flask web backend
-├── requirements.txt            # Python dependencies
+├── requirements.txt            # Python dependencies (see below)
 ├── README.md                   # Project documentation
 │
 ├── static/                     # Static files for web
@@ -56,41 +54,45 @@ Intelligent_Clothing_Tagging_and_Pairing_System/
 │       ├── Bottom/
 │       └── ...
 │
-├── test_code/                  # Testing scripts
-│   └── filter/
-│       ├── filter.py
-│       ├── list_filter.txt
-│       └── ...
-│
-└── analysis/                   # Analysis and evaluation scripts
-    ├── analysis.py
-    ├── compare.py
-    ├── rank.py
-    └── sort.py
+└── test_code/                  # Testing scripts
+    └── filter/
+        ├── filter.py
+        ├── list_filter.txt
+        └── ...
+ 
 ```
 
 ---
 
-## 🧩 Main Components
+## 🌟 Overview
 
-- **Attribute Tagging:**  
-  Uses a ResNet-based model to predict fine-grained clothing attributes from images.
-
-- **Color Classification:**  
-  Classifies dominant clothing colors using a separate model.
-
-- **Outfit Compatibility:**  
-  Trains an MLP model to score the compatibility of top-bottom pairs based on their attributes and colors.
-
-- **Web Interface:**  
-  Flask-based frontend for uploading images and receiving outfit recommendations.
-
-- **Analysis & Evaluation:**  
-  Scripts for ranking, comparing, and analyzing model performance.
+This repository contains all code, models, and scripts for the Intelligent Clothing Tagging and Pairing System. The system predicts clothing attributes and colors, and recommends compatible outfit pairs using deep learning.
 
 ---
 
-## 🚀 How to Run Backend and Frontend
+## ⚙️ Prerequisites
+
+- **Python version:** 3.8+
+- **Required packages:**  
+  All dependencies are listed in `requirements.txt`.  
+  Main packages include:
+  - `torch`, `torchvision` (deep learning)
+  - `numpy` (numerical operations)
+  - `flask`, `werkzeug` (web backend)
+  - `pillow` (image processing)
+  - `matplotlib`, `tqdm` (analysis and visualization)
+- **Installation:**  
+  Install all dependencies with:
+  ```bash
+  pip install -r requirements.txt
+  ```
+- **CUDA:**  
+  *Optional.* If you have a CUDA-capable GPU and want to accelerate training/inference, install the CUDA-compatible versions of `torch` and `torchvision`.  
+  If you do not use CUDA, the code will run on CPU by default.
+
+---
+
+## 🚀 Usage
 
 ### 1. Backend (Flask API)
 
@@ -107,26 +109,58 @@ Intelligent_Clothing_Tagging_and_Pairing_System/
 - The frontend is served by Flask using HTML templates (e.g., `templates/index.html`).
 - Open your browser and go to [http://127.0.0.1:5000](http://127.0.0.1:5000) to use the web interface.
 
+### 3. Model Training
+
+- **Attribute Tagging:**  
+  Train with `model/attr_label/train.py`
+- **Color Classification:**  
+  Train with `model/color_label/train.py`
+- **Outfit Compatibility:**  
+  Train with `model/main_approach/train.py` (main) or `model/baseline/train.py` (baseline)
+
+### 4. Inference & Evaluation
+
+- Use scripts in `model/attr_label/`, `model/color_label/`, `model/main_approach/`, and `model/baseline/` for inference and evaluation.
+
 ---
 
-## ⚙️ Additional Usage
+## 🛠️ Hyperparameters
 
-- **Model Training:**  
-  See scripts in `model/attr_label/`, `model/color_label/`, and `model/main_approach/` for training and evaluation.
+Key hyperparameters (see each training script for details):
 
-- **Dataset Preparation:**  
-  Use scripts in `dataset/` to organize and preprocess data.
-
-- **Analysis:**  
-  Use scripts in `analysis/` to evaluate and compare model performance.
+- **Attribute Tagging:**  
+  - Epochs: 10  
+  - Batch size: 64  
+  - Learning rate: 1e-4  
+- **Color Classification:**  
+  - Epochs: 10  
+  - Batch size: 8  
+  - Learning rate: 1e-3  
+- **Outfit Compatibility:**  
+  - Epochs: 10  
+  - Batch size: 64  
+  - Learning rate: 5e-4 (main), 1e-3 (test)  
+  - Model: MLP with hidden_dim=512
 
 ---
 
-**Note:**  
-If you modify the backend code, restart the Flask server to apply changes.
+## 📊 Experiment Results
 
-- `requirements.txt` lists all Python dependencies needed to run and train the models.  
-  Make sure to install them before running any code:
-  ```bash
-  pip install -r requirements.txt
-  ```
+<p align="left">
+  <img src="test_code/analysis/rank_comparison.png" alt="Rank Comparison" style="max-width: 500px; width: 100%; height: auto;">
+</p>
+
+| Metric           | Baseline | Main Approach |
+|------------------|----------|--------------|
+| Average Rank     | 19.80 | 13.78 |
+| Top-5 Accuracy   | 15.0 | 17.5 |
+| Lower Rank   | 10/40 | 30/40 |
+
+---
+
+## 📝 Notes
+
+- `requirements.txt` lists all Python dependencies needed to run and train the models.
+- If you modify the backend code, restart the Flask server to apply changes.
+- For dataset preparation, see scripts in the `dataset/` directory.
+
