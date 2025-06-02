@@ -124,3 +124,9 @@ Intelligent_Clothing_Tagging_and_Pairing_System/
 
 **Note:**  
 If you modify the backend code, restart the Flask server to apply changes.
+
+- `requirements.txt` lists all Python dependencies needed to run and train the models.  
+  Make sure to install them before running any code:
+  ```bash
+  pip install -r requirements.txt
+  ```

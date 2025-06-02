@@ -1,0 +1,17 @@
+# Deep learning & ML
+torch
+torchvision
+numpy
+
+# Web backend
+flask
+werkzeug
+
+# Image processing
+pillow
+
+# Data analysis & plotting (for analysis scripts)
+matplotlib
+tqdm
+
+# If using CUDA, ensure torch/torchvision match your CUDA version
