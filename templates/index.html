@@ -26,28 +26,57 @@
         .upload-status { position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); font-size: 14px; color: #0078d7; display: none; }
         .divider { height: 1px; background: #ddd; margin: 50px 0 30px; }
         .net-section { opacity: 0.85; }
+        #result-user, #result-net {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        #result-user img,
+        #result-net img {
+            width: 120px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        #result-user img:hover,
+        #result-net img:hover {
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
 <header><h1>虛擬衣櫃推薦系統</h1></header>
 <div class="container">
-    <!-- 使用者衣櫃區塊 -->
+    <!-- 上衣選擇 -->
     <div class="section">
         <h2>使用者上衣衣櫃</h2>
         <div class="closet-scroll" id="top-closet">
-            {% for img in user_tops %}<img src="{{ url_for('static', filename='user_top/' + img) }}" data-name="{{ img }}" data-type="user_top" onclick="selectItem(this)">{% endfor %}
+            {% for img in user_tops %}
+                <img src="{{ url_for('static', filename='user_top/' + img) }}" data-name="{{ img }}" data-type="user_top" onclick="selectItem(this)">
+            {% endfor %}
         </div>
     </div>
     <div class="section">
         <h2>使用者褲子衣櫃</h2>
         <div class="closet-scroll" id="bottom-closet">
-            {% for img in user_bottoms %}<img src="{{ url_for('static', filename='user_bottom/' + img) }}" data-name="{{ img }}" data-type="user_bottom" onclick="selectItem(this)">{% endfor %}
+            {% for img in user_bottoms %}
+                <img src="{{ url_for('static', filename='user_bottom/' + img) }}" style="cursor: default;">
+            {% endfor %}
         </div>
     </div>
+
+
+    <!-- 推薦按鈕 -->
     <div class="center-button">
-        <button onclick="triggerRecommendation()">推薦搭配</button>
+        <button onclick="triggerRecommendation()">推薦褲子搭配</button>
     </div>
-    <!-- 上傳區塊 -->
+
+    <!-- 上傳圖片 -->
     <div class="upload-section">
         <h3>新增衣物圖片至衣櫃</h3>
         <form id="upload-form" method="post" action="/upload" enctype="multipart/form-data">
@@ -55,9 +84,7 @@
                 拖曳圖片到這裡或點擊選擇圖片
                 <input type="file" name="file" id="file-input" style="display: none;" required>
             </div>
-
             <div id="upload-filename" style="margin-top:10px; color:#555;"></div>
-
             <div style="margin-top: 16px;">
                 <select name="category" style="padding: 8px 12px; font-size: 16px; border-radius: 6px;">
                     <option value="user_top">上衣</option>
@@ -70,16 +97,19 @@
     </div>
 
     <div class="divider"></div>
-    <!-- 網路衣櫃區塊 -->
-    <div class="section net-section">
-        <h2>網路上衣庫</h2>
-        <div class="closet-scroll">{% for img in net_tops %}<img src="{{ url_for('static', filename='net_top/' + img) }}">{% endfor %}</div>
-    </div>
+
+    <!-- 網路衣櫃展示 -->
     <div class="section net-section">
         <h2>網路褲子庫</h2>
-        <div class="closet-scroll">{% for img in net_bottoms %}<img src="{{ url_for('static', filename='net_bottom/' + img) }}">{% endfor %}</div>
+        <div class="closet-scroll">
+            {% for img in net_bottoms %}
+                <img src="{{ url_for('static', filename='net_bottom/' + img) }}">
+            {% endfor %}
+        </div>
     </div>
 </div>
+
+<!-- 推薦結果 Modal -->
 <div id="overlay" onclick="closeModal()"></div>
 <div id="recommendation-modal">
     <h2>AI 搭配結果</h2>
@@ -88,18 +118,21 @@
     <br>
     <button onclick="closeModal()">關閉</button>
 </div>
+
 <script>
     let selectedImage = null;
     let selectedType = null;
+
     function selectItem(img) {
         document.querySelectorAll('.closet-scroll img').forEach(i => i.classList.remove('selected'));
         img.classList.add('selected');
         selectedImage = img.getAttribute('data-name');
         selectedType = img.getAttribute('data-type');
     }
+
     function triggerRecommendation() {
-        if (!selectedImage || !selectedType) {
-            alert('請先點選一件上衣或褲子！');
+        if (!selectedImage || selectedType !== 'user_top') {
+            alert('請先點選一件上衣！');
             return;
         }
         fetch("/recommend", {
@@ -109,41 +142,35 @@
         })
         .then(response => response.json())
         .then(data => {
-            document.getElementById('result-user').innerHTML = `你的推薦：<br><img src="/static/${data.user_path}" width="150">`;
-            document.getElementById('result-net').innerHTML = `網路推薦：<br><img src="/static/${data.net_path}" width="150">`;
+            const userImgs = data.user_paths.map(path => `<img src="/static/${path}" width="120" style="margin: 8px;">`).join('');
+            const netImgs = data.net_paths.map(path => `<img src="/static/${path}" width="120" style="margin: 8px;">`).join('');
+            document.getElementById('result-user').innerHTML = `你的推薦：<br>${userImgs}`;
+            document.getElementById('result-net').innerHTML = `網路推薦：<br>${netImgs}`;
             showModal();
         });
     }
+
     function showModal() {
         document.getElementById('overlay').style.display = 'block';
         document.getElementById('recommendation-modal').style.display = 'block';
     }
+
     function closeModal() {
         document.getElementById('overlay').style.display = 'none';
         document.getElementById('recommendation-modal').style.display = 'none';
     }
+
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
     const form = document.getElementById('upload-form');
     const statusText = document.getElementById('upload-status');
     const filenameText = document.getElementById('upload-filename');
 
-    // 點擊上傳區觸發檔案選擇
     dropZone.addEventListener('click', () => fileInput.click());
-
-    // 拖曳效果處理
-    dropZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropZone.classList.add('dragover');
-    });
-
-    dropZone.addEventListener('dragleave', () => {
-        dropZone.classList.remove('dragover');
-    });
-
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
     dropZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropZone.classList.remove('dragover');
+        e.preventDefault(); dropZone.classList.remove('dragover');
         const files = e.dataTransfer.files;
         if (files.length > 0) {
             fileInput.files = files;
@@ -151,7 +178,6 @@
         }
     });
 
-    // 使用者選擇檔案後顯示名稱
     fileInput.addEventListener('change', () => {
         if (fileInput.files.length > 0) {
             filenameText.textContent = `已選擇檔案：${fileInput.files[0].name}`;
@@ -160,17 +186,13 @@
         }
     });
 
-    // 表單送出事件處理
     form.addEventListener('submit', (e) => {
         e.preventDefault();
         const formData = new FormData(form);
         statusText.style.display = 'block';
         statusText.textContent = '上傳中請稍候...';
 
-        fetch('/upload', {
-            method: 'POST',
-            body: formData
-        })
+        fetch('/upload', { method: 'POST', body: formData })
         .then(res => {
             if (res.redirected) {
                 statusText.textContent = '✅ 上傳成功，重新整理中...';
@@ -183,7 +205,6 @@
             statusText.textContent = '❌ 發生錯誤，請稍後再試';
         });
     });
-
 </script>
 </body>
 </html>

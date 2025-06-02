@@ -9,7 +9,7 @@ sys.path.append(project_root)
 from color_label.model import ColorClassifier
 
 class ColorExtractor:
-    def __init__(self, model_path, device, color_txt_path='color.txt', num_colors=12):
+    def __init__(self, model_path, device, num_colors=12):
         self.device = device
         self.model = ColorClassifier(num_classes=num_colors).to(device)
         self.model.load_state_dict(torch.load(model_path, map_location=device))
@@ -17,6 +17,9 @@ class ColorExtractor:
 
         self.num_colors = num_colors
         self.color_names = []
+
+        # 修正 color.txt 的路徑：使用與 color_util.py 相對的絕對路徑
+        color_txt_path = os.path.join(os.path.dirname(__file__), 'color.txt')
         with open(color_txt_path, 'r', encoding='utf-8') as f:
             for line in f:
                 name = line.strip()
@@ -28,7 +31,6 @@ class ColorExtractor:
             T.ToTensor(),
             T.Normalize([0.5]*3, [0.5]*3)
         ])
-
     def extract(self, image_path):
         image = Image.open(image_path).convert('RGB')
         tensor = self.transform(image).unsqueeze(0).to(self.device)

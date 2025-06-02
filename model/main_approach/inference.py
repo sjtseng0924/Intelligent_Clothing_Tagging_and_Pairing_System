@@ -14,13 +14,9 @@ from color_util import ColorExtractor
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # === 路徑設定 ===
-attr_ckpt = os.path.join(project_root, "label_train", "saved_models", "best_tagger.pth")
-<<<<<<< HEAD:MLP/inference.py
-compat_ckpt = os.path.join(project_root, "MLP", "compatibility_mlp_v3.pth")
-=======
+attr_ckpt = os.path.join(project_root, "model", "attr_label", "best_tagger.pth")
 compat_ckpt = os.path.join(project_root, "main_approach", "compatibility_mlp_main_v2.pth")
->>>>>>> 6be33c4d403880293d3418879faee3b45c7ef76a:model/main_approach/inference.py
-color_ckpt = os.path.join(project_root, "color_label", "color_classifier.pt")
+color_ckpt = os.path.join(project_root, "model", "color_label", "color_classifier.pt")
 
 # === 載入模型 ===
 attr_extractor = AttributeExtractor(attr_ckpt, device)
