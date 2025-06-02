@@ -21,7 +21,7 @@ net_bottom_dir = os.path.join(project_root, 'static', 'net_bottom')
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 attr_ckpt = os.path.join(project_root, "model", "attr_label", "best_tagger.pth")
 color_ckpt = os.path.join(project_root, "model", "color_label", "color_classifier.pt")
-compat_ckpt = os.path.join(project_root, "model", "main_approach", "compatibility_mlp_main_v2.pth")
+compat_ckpt = os.path.join(project_root, "model", "main_approach", "compatibility_model.pth")
 
 attr_extractor = AttributeExtractor(attr_ckpt, device)
 color_extractor = ColorExtractor(color_ckpt, device, num_colors=12)
