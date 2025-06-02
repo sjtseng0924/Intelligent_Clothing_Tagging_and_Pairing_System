@@ -11,12 +11,12 @@ import json
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 
-from label_train.model import AttributeResNet
-from pair_train.train import Top2BottomModel  # 假設你把搭配模型放這裡
+from attr_label.model import AttributeResNet
+from baseline.train import Top2BottomModel  # 假設你把搭配模型放這裡
 
 # === 設定參數 ===
-image_path = os.path.join(project_root, "baseline","Top", "8933008.jpg")
-attribute_model_path = os.path.join(project_root, "label_train", "saved_models", "best_tagger.pth")
+image_path = os.path.join(project_root, "baseline","Top", "2941774_top.jpg")
+attribute_model_path = os.path.join(project_root, "attr_label", "best_tagger.pth")
 pairing_model_path = os.path.join(project_root, "baseline", "top2bottom.pth")
 num_labels = 1000
 
@@ -96,10 +96,13 @@ def compare_with_user_bottoms(predicted_label, bottom_dir, top_k=10, show_top_n=
     same_name_bottom = top_filename.replace("Top", "Bottom")
     match_index = next((i for i, (filename, _) in enumerate(distances) if filename == same_name_bottom), -1)
 
-    if match_index >= 0:
-        print(f"\n同檔名褲子 `{same_name_bottom}` 排名第 {match_index + 1} 名")
-    else:
-        print(f"\n找不到與 `{top_filename}` 同名的褲子 `{same_name_bottom}`")
+    output_txt = os.path.join(project_root, "baseline", "top_bottom_rank.txt")
+    with open(output_txt, "a") as f:
+        if match_index >= 0:
+            print(f"\n同檔名褲子 `{same_name_bottom}` 排名第 {match_index + 1} 名")
+            f.write(f"{top_filename} {match_index + 1}\n")
+        else:
+            print(f"\n找不到與 `{top_filename}` 同名的褲子 `{same_name_bottom}`")
 
     return distances[0]  # 回傳最佳匹配的褲子（距離最小）
 

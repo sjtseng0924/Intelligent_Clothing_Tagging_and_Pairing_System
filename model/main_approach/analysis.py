@@ -4,7 +4,7 @@ from collections import Counter
 import shutil
 
 # Directory structure
-base_dir = "../dataset/Test-Dataset-Category"
+base_dir = "../../dataset/Test-Dataset-Category"
 
 # Total matches counter across all sets
 total_matches_all = 0

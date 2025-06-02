@@ -1,6 +1,7 @@
 import torch
 import torchvision.transforms as T
 from PIL import Image
+from attr_label.model import AttributeResNet
 import os
 import sys
 
@@ -9,7 +10,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 from model.attr_label.model import AttributeResNet
 
 class AttributeExtractor:
-    def __init__(self, model_path, device, threshold=0.02):
+    def __init__(self, model_path, device, attr_file='attr_list.txt', threshold=0.02):
         self.device = device
         self.model = AttributeResNet(num_labels=1000).to(device)
         self.model.load_state_dict(torch.load(model_path, map_location=device))

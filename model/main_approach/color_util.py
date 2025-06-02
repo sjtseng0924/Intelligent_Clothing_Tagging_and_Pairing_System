@@ -9,7 +9,7 @@ sys.path.append(project_root)
 from color_label.model import ColorClassifier
 
 class ColorExtractor:
-    def __init__(self, model_path, device, num_colors=12):
+    def __init__(self, model_path, device, color_txt_path='color_list.txt', num_colors=12):
         self.device = device
         self.model = ColorClassifier(num_classes=num_colors).to(device)
         self.model.load_state_dict(torch.load(model_path, map_location=device))
